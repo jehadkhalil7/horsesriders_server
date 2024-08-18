@@ -1,21 +1,23 @@
+const USER_MODEL = require("../Models/user.model");
+
 const login = async (req, res) => {
-    const { userName, pass } = req.body;
+    try {
+        const { userName, pass } = req.body;
+        const user = await USER_MODEL.findOne({ name: userName });
 
-    const user = await USER_MODEL.findOne({ userName: userName })
-        .catch(e => {
-            res.status(500).json({ error: true, errorMessage: e.message }
-            );
-            if (!user) {
-                res.status(550).json({ error: true, errorMessage: "no user" });
-                return;
-            }
-            if (user.pass == pass) {
-                res.status(200).json({ auth: true, user: user });
-            } else {
-                res.status(545).json({ auth: false, errorMessage: "bad pass" });
-            }
+        if (!user) {
+            return res.status(404).json({ error: true, errorMessage: "No user found" });
+        }
 
-        });
+        if (user.pass === pass) {
+            return res.status(200).json({ auth: true, user });
+        } else {
+            return res.status(401).json({ auth: false, errorMessage: "Incorrect password" });
+        }
+    } catch (e) {
+        console.error('Error during login:', e.message);
+        return res.status(500).json({ error: true, errorMessage: e.message });
+    }
 };
 
 const createNewUser = (req, res) => {
