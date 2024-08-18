@@ -11,6 +11,10 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
+  pass: {
+    type: String,
+    required: true
+  }
 });
 
 const USER_MODEL = model("user", userSchema);
